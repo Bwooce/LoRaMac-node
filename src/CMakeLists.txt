@@ -23,7 +23,7 @@ cmake_minimum_required(VERSION 3.6)
 #---------------------------------------------------------------------------------------
 
 # Allow switching of target platform
-set(BOARD_LIST NAMote72 NucleoL073 NucleoL152 NucleoL476 SAML21 SKiM880B SKiM980A SKiM881AXL B-L072Z-LRWAN1)
+set(BOARD_LIST HeltecLN151 NAMote72 NucleoL073 NucleoL152 NucleoL476 SAML21 SKiM880B SKiM980A SKiM881AXL B-L072Z-LRWAN1)
 set(BOARD NucleoL073 CACHE STRING "Default target platform is NucleoL073")
 set_property(CACHE BOARD PROPERTY STRINGS ${BOARD_LIST})
 
@@ -49,8 +49,18 @@ option(CLASSB_ENABLED "Class B support of LoRaMac" OFF)
 #---------------------------------------------------------------------------------------
 # Target Boards
 #---------------------------------------------------------------------------------------
+if(BOARD STREQUAL HeltecLN151)
+    # Configure toolchain for Heltec LN151
+    set(LINKER_SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/boards/HeltecLN151/cmsis/arm-gcc/STM32L151CCUX_FLASH.ld)
+    include(stm32l1)
 
-if(BOARD STREQUAL NAMote72)
+    # Build platform specific board implementation
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/boards/HeltecLN151)
+
+    # Configure radio
+    set(RADIO sx1276 CACHE INTERNAL "Radio sx1276 selected")
+
+elseif(BOARD STREQUAL NAMote72)
     # Configure toolchain for NAMote72
     set(LINKER_SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/boards/NAMote72/cmsis/arm-gcc/stm32l152xc_flash.ld)
     include(stm32l1)
